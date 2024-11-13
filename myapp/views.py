@@ -1,5 +1,5 @@
 from django.shortcuts import render, redirect
-from myapp.models import Appointment
+from myapp.models import Appointment, Contact
 
 # Create your views here.
 def index(request):
@@ -36,3 +36,17 @@ def appointments(request):
         return redirect('/appointments')
     else:
         return render(request,'appointments.html')
+
+def contact(request):
+    if request.method == 'POST':
+        mycontact=Contact(
+            name=request.POST['name'],
+            email=request.POST['email'],
+            subject=request.POST['subject'],
+            message = request.POST['message']
+        )
+
+        mycontact.save()
+        return redirect('/contact')
+    else:
+        return render(request, 'contact.html')
