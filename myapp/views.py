@@ -1,5 +1,6 @@
 from django.shortcuts import render, redirect
 from myapp.models import Appointment, Contact
+from myapp.forms import AppointmentForm
 
 # Create your views here.
 def index(request):
@@ -26,14 +27,14 @@ def appointments(request):
             name =request.POST['name'],
             email = request.POST['email'],
             phone = request.POST['phone'],
-            datetime = request.POST['date'],
+            date = request.POST['date'],
             department = request.POST['department'],
             doctor = request.POST['doctor'],
             message = request.POST['message']
         )
 
         myappointment.save()
-        return redirect('/appointments')
+        return redirect('/show')
     else:
         return render(request,'appointments.html')
 
@@ -50,3 +51,26 @@ def contact(request):
         return redirect('/contact')
     else:
         return render(request, 'contact.html')
+
+def show(request):
+    allappointments = Appointment.objects.all()
+    return render(request, 'show.html',{'appointment':allappointments})
+
+def delete(request, id):
+    appoint = Appointment.objects.get(id=id)
+    appoint.delete()
+    return redirect('/show')
+
+def edit(request, id):
+   editappointment = Appointment.objects.get(id=id)
+   return render(request, 'edit.html', {'appointment':editappointment})
+
+def update(request, id):
+    updateinfo = Appointment.objects.get(id=id)
+    form = AppointmentForm(request.POST, instance=updateinfo)
+    if form.is_valid():
+        form.save()
+        return redirect('/show')
+    else:
+        return render(request, 'edit.html')
+
